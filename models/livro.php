@@ -14,7 +14,7 @@ class Livro {
     public static function listar() {
         try {
             $conexao = Conexao::conectar();
-            $sql = "SELECT * FROM livro";
+            $sql = "SELECT livro.*, categoria.nome FROM livro JOIN categoria ON livro.id_categoria = categoria.id_categoria";
             $stmt = $conexao->prepare($sql);
             $stmt->execute();
             return $stmt->fetchAll();
@@ -36,18 +36,18 @@ class Livro {
         }
     }
 
-    public function inserir($titulo, $ano, $autor, $resumo, $capa, $categoria)
+    public function inserir($titulo, $ano_pub, $autor, $resumo, $capa, $categoria)
     {
         try {
             $conexao = Conexao::conectar();
-            $sql = "INSERT INTO livro (titulo, ano, autor, resumo, capa, id_categoria) VALUES (:titulo, :ano_pub, :autor, :resumo, :capa, :id_categoria)";
+            $sql = "INSERT INTO livro (titulo, ano_pub, autor, resumo, capa, id_categoria) VALUES (:titulo, :ano_pub, :autor, :resumo, :capa, :id_categoria)";
             $stmt = $conexao->prepare($sql);
             $stmt->bindValue(':titulo', $titulo);
-            $stmt->bindValue(':ano', $ano);
+            $stmt->bindValue(':ano_pub', $ano_pub);
             $stmt->bindValue(':autor', $autor);
             $stmt->bindValue(':resumo', $resumo);
             $stmt->bindValue(':capa', $capa);
-            $stmt->bindValue(':id_da_pagina', $id_da_pagina);
+            $stmt->bindValue(':id_categoria', $categoria);
             $stmt->execute();
         } catch (PDOException $e) { // executa caso aconteça um erro
             // mostra o erro encontrado
@@ -84,15 +84,23 @@ class Livro {
 
             if ($resultado) {
                 $this->id_livro = $resultado['id_livro'];
-                $this->nome = $resultado['nome'];
+                $this->titulo = $resultado['titulo'];
+                $this->ano_pub = $resultado['ano_pub'];
+                $this->autor = $resultado['autor'];
+                $this->resumo = $resultado['resumo'];
+                $this->capa = $resultado['capa'];
+                $this->categoria = $resultado['id_categoria'];
             }
         } catch (PDOException $e) { // executa caso aconteça um erro
                echo $e->getMessage();
         }
+
+
+
     }
 
     
-    public function atualizar($nome, $id)
+    public function atualizar($titulo, $ano_pub, $autor, $resumo, $capa, $id_categoria, $id)
     {
         // usamos try/catch quando existe possibilidade de erro, principalmente ao usar banco de dados
         // o try é onde tentamos executar o código
@@ -100,12 +108,33 @@ class Livro {
             // chama o método conectar() da classe Conexao
             // cria uma conexão configurada e guarda na variável $conexao
             $conexao = Conexao::conectar();
+            $sql = "UPDATE livro SET titulo = :titulo, ano_pub = :ano_pub, autor = :autor, resumo = :resumo, capa = :capa, id_categoria = :id_categoria WHERE id_livro= :id";
+            $stmt = $conexao->prepare($sql);
+            $stmt->bindValue(':titulo', $titulo);
+            $stmt->bindValue(':ano_pub', $ano_pub);
+            $stmt->bindValue(':autor', $autor);
+            $stmt->bindValue(':resumo', $resumo);
+            $stmt->bindValue(':capa', $capa);
+            $stmt->bindValue(':id_categoria', $id_categoria);
+            $stmt->bindValue(':id', $id);
+            
+            $stmt->execute();
+        } catch (PDOException $e) { 
 
-            // comando SQL responsável por atualizar o nome de uma categoria
-            // :nome e :id são espaços reservados para os valores que serão utilizados
+            echo $e->getMessage();
+        }
+    }
+
+        public function atualizar_sem_capa($nome, $id)
+    {
+        
+        try {
+         
+            $conexao = Conexao::conectar();
+
             $sql = "UPDATE livro SET nome = :nome WHERE id_livro= :id";
 
-            // prepara o SQL para executar
+
             $stmt = $conexao->prepare($sql);
 
             // coloca o valor de $nome no espaço reservado :nome
@@ -123,6 +152,26 @@ class Livro {
     }
 
 
+    public function getId_livro() {
+        return $this->id_livro;
+    }
+    public function getTitulo() {
+        return $this->titulo;
+    }
+    public function getAutor() {
+        return $this->autor;
+    }
+    public function getAno_pub() {
+        return $this->ano_pub; 
+    }
+    public function getResumo() {
+        return $this->resumo;
+    }
+    public function getCapa() {
+        return $this->capa;
+    }
+    public function getCategoria() {
+        return $this->categoria;
+    }
 
-    
 }

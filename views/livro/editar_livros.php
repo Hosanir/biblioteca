@@ -1,32 +1,39 @@
 <?php
 require_once __DIR__ . "/../../templates/_cabecalho.php";
 require_once __DIR__ ."/../../models/categoria.php";
+require_once __DIR__ . "/../../models/livro.php";
 
 $categoria = Categoria::listar();
+$id = $_GET['id'];
+
+$livro = new livro;
+$livro ->carregar($id);
+
+
 ?>
 
     <main class="main-detalhe">
        
-        <form action="/biblioteca/controllers/livro_add_controller.php" method="post" enctype="multipart/form-data">
+        <form action="/biblioteca/controllers/livro_edt_controller.php" method="post" enctype="multipart/form-data">
         
             <div class="form-item">
                 <label for="titulo">Titulo</label>
-                <input type="text" name="titulo" id="titulo">
+                <input type="text" name="titulo" id="titulo" value="<?= $livro->getTitulo(); ?>">
             </div>
 
             <div class="form-item">
                 <label for="ano">Ano da Publicacao</label>
-                <input type="text" name="ano" id="ano" max="2026">
+                <input type="text" name="ano" id="ano" max="2026" value="<?= $livro->getAno_pub(); ?>">
             </div>
 
             <div class="form-item">
                 <label for="autor">Autor</label>
-                <input type="text" name="autor" id="autor">
+                <input type="text" name="autor" id="autor" value="<?= $livro->getAutor(); ?>">
             </div>
 
             <div class="form-item">
                 <label for="resumo">Resumo</label>
-                <textarea name="resumo" id="resumo"></textarea>
+                <textarea name="resumo" id="resumo"><?= $livro->getResumo(); ?></textarea>
             </div>
 
             <div class="form-item">
@@ -34,7 +41,7 @@ $categoria = Categoria::listar();
                 <select name="categoria" id="categoria">
 
                 <?php foreach($categoria as $c): ?>
-                    <option value="<?= $c['id_categoria'] ?>"><?= $c['nome'] ?></option>
+                    <option value="<?= $c['id_categoria'] ?>" <?= ($c['id_categoria'] == $livro->getCategoria()) ? 'selected' : '' ?>><?= $c['nome'] ?></option>
                 <?php endforeach; ?>
                 
                 </select>
@@ -45,7 +52,9 @@ $categoria = Categoria::listar();
                 <input type="file" name="capa" id="capa">
             </div>
 
-            <button type="submit">Cadastrar</button>
+            <input type="hidden" name="id_livro" value="<?= $livro->getId_livro(); ?>">
+
+            <button type="submit">Atualizar</button>
 
         </form>
     </main>
@@ -53,3 +62,5 @@ $categoria = Categoria::listar();
   <?php 
 require_once __DIR__ . "/../../templates/_rodape.php";
 ?>
+<?php
+

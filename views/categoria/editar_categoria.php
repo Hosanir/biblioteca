@@ -28,4 +28,3 @@ $categoria->carregar($id);
 <?php
 require_once __DIR__ . "/../../templates/_rodape.php";
 ?>
-// preceisa padroniza os textos da tabela "Romanece" "ROMANCE" "romance" deve ser padronizado antes de ir para o banco de dados
